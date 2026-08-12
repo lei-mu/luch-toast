@@ -2,7 +2,7 @@
   "id": "luch-toast",
   "name": "luch-toast",
   "displayName": "luch-toast 项目级消息提示封装",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "基于原生 uni.showToast 的轻量项目级封装，支持公共配置、多实例、自定义快捷方法和 Promise",
   "main": "index.js",
   "types": "index.d.ts",

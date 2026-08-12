@@ -63,6 +63,59 @@ test('快捷方法图标只是默认值并允许覆盖', async () => {
 	assert.deepEqual(icons, ['error', 'none', 'success'])
 })
 
+test('公共 icon 函数可使用原始图标和快捷方法名', async () => {
+	const configs = []
+	const contexts = []
+	const instance = createToast({
+		icon(title, { defaultIcon, methodName }) {
+			contexts.push({ defaultIcon, methodName })
+			return title.length > 7 ? 'none' : defaultIcon
+		}
+	})
+	mockUni((config) => {
+		configs.push({ icon: config.icon, title: config.title })
+		config.success({ errMsg: 'showToast:ok' })
+	})
+
+	await instance.error('短提示')
+	await instance.loading('超过七个汉字长度的提示')
+
+	assert.deepEqual(configs, [
+		{ icon: 'error', title: '短提示' },
+		{ icon: 'none', title: '超过七个汉字长度的提示' }
+	])
+	assert.deepEqual(contexts, [
+		{ defaultIcon: 'error', methodName: 'error' },
+		{ defaultIcon: 'loading', methodName: 'loading' }
+	])
+})
+
+test('icon 函数返回 undefined 时保留原始图标', async () => {
+	mockUni((config) => {
+		assert.equal(config.icon, 'fail')
+		config.success({ errMsg: 'showToast:ok' })
+	})
+
+	await toast.fail('请求失败', {
+		icon: () => undefined
+	})
+})
+
+test('多层 icon 函数仍可回退至内置快捷方法图标', async () => {
+	const instance = createToast({
+		icon: () => undefined,
+		error: {
+			icon: () => undefined
+		}
+	})
+	mockUni((config) => {
+		assert.equal(config.icon, 'error')
+		config.success({ errMsg: 'showToast:ok' })
+	})
+
+	await instance.error('33', { icon: () => undefined })
+})
+
 test('defaults 可实时修改但不可整体替换', async () => {
 	const instance = createToast({ duration: 800 })
 	instance.defaults.duration = 1200

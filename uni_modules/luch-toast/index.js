@@ -117,6 +117,26 @@ function takeHooks(config) {
 	return hooks
 }
 
+function getDefaultIcon(callConfig, methodDefaults, sharedDefaults, fallbackIcon) {
+	const icons = [callConfig.icon, methodDefaults.icon, sharedDefaults.icon, fallbackIcon]
+	return icons.find((icon) => icon !== undefined && typeof icon !== 'function')
+}
+
+function getIconResolver(callConfig, methodDefaults, sharedDefaults) {
+	if (hasOwn(callConfig, 'icon')) {
+		return typeof callConfig.icon === 'function' ? callConfig.icon : null
+	}
+	if (typeof methodDefaults.icon === 'function') return methodDefaults.icon
+	return typeof sharedDefaults.icon === 'function' ? sharedDefaults.icon : null
+}
+
+function resolveIcon(config, resolver, context) {
+	if (resolver) {
+		const icon = resolver(config.title, context)
+		config.icon = icon === undefined ? context.defaultIcon : icon
+	}
+}
+
 function runHooks(callHooks, defaults, hookName, payload) {
 	if (callHooks[hookName]) callHooks[hookName](payload)
 	if (typeof defaults[hookName] === 'function') defaults[hookName](payload)
@@ -135,9 +155,10 @@ function createToast(instanceConfig = {}) {
 		const methodDefaults = BUILT_IN_METHOD_SET.has(methodName)
 			? defaults[methodName]
 			: defaults.methods[methodName] || {}
+		const sharedDefaults = getSharedDefaults(defaults)
 		const toastConfig = {
 			icon: 'none',
-			...getSharedDefaults(defaults),
+			...sharedDefaults,
 			...methodDefaults,
 			...callConfig
 		}
@@ -164,6 +185,17 @@ function createToast(instanceConfig = {}) {
 				runHooks(callHooks, defaults, 'onComplete', result)
 			})
 		}
+
+		// icon 函数接收标题及合并后原本应使用的图标信息。
+		resolveIcon(toastConfig, getIconResolver(callConfig, methodDefaults, sharedDefaults), {
+			defaultIcon: getDefaultIcon(
+				callConfig,
+				methodDefaults,
+				sharedDefaults,
+				BUILT_IN_METHOD_SET.has(methodName) ? BUILT_IN_METHOD_DEFAULTS[methodName].icon : 'none'
+			),
+			methodName
+		})
 
 		const hasDelay = hasOwn(toastConfig, 'xDelay')
 		const delay = toastConfig.xDelay

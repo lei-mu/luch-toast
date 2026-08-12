@@ -1,4 +1,10 @@
 export type ToastIcon = 'success' | 'error' | 'fail' | 'exception' | 'loading' | 'none'
+export interface ToastIconContext {
+	defaultIcon: ToastIcon
+	methodName?: string
+}
+
+export type ToastIconResolver = (title: string, context: ToastIconContext) => ToastIcon | undefined
 
 export interface ToastResult {
 	errMsg?: string
@@ -10,7 +16,7 @@ export type EmptyTitlePolicy = 'reject' | 'ignore'
 
 export interface ToastOptions {
 	title?: string
-	icon?: ToastIcon
+	icon?: ToastIcon | ToastIconResolver
 	image?: string
 	mask?: boolean
 	duration?: number

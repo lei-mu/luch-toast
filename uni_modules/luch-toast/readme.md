@@ -39,6 +39,92 @@ await toast.error('操作失败', {
 })
 ```
 
+## 动态 icon
+
+`icon` 除了直接传原生图标字符串，也可以传函数。函数在调用 `uni.showToast` 前执行：
+
+```js
+icon(title, context) {}
+```
+
+- `title`：本次 Toast 的标题。
+- `context.defaultIcon`：本次调用在**不使用 icon 函数**时，本来会展示的图标。
+- `context.methodName`：快捷方法名，例如 `error`、`loading`；普通 `toast('提示')` 调用时为 `undefined`。
+
+`defaultIcon` 不属于公共配置、快捷方法配置或单次配置中的任何一层。它是每次调用时，排除所有 `icon` 函数后，按现有优先级计算出的最终静态图标：
+
+```text
+单次静态 icon > 快捷方法静态 icon > 公共静态 icon > 内置图标
+```
+
+内置图标如下：
+
+| 调用方式 | 内置图标 |
+| --- | --- |
+| `toast('提示')` | `none` |
+| `toast.success('提示')` | `success` |
+| `toast.error('提示')` | `error` |
+| `toast.fail('提示')` | `fail` |
+| `toast.exception('提示')` | `exception` |
+| `toast.loading('提示')` | `loading` |
+| `toast.warning('提示')` | `none` |
+
+例如，未配置其他静态图标时：
+
+```js
+toast.error('失败', {
+	icon(title, { defaultIcon, methodName }) {
+		// defaultIcon 为 'error'，methodName 为 'error'
+		return defaultIcon
+	}
+})
+```
+
+若静态配置已覆盖图标，则 `defaultIcon` 使用覆盖后的值：
+
+```js
+const appToast = toast.create({
+	error: { icon: 'fail' }
+})
+
+appToast.error('失败', {
+	icon(title, { defaultIcon }) {
+		// defaultIcon 为 'fail'
+		return defaultIcon
+	}
+})
+```
+
+函数必须返回原生 `uni.showToast` 支持的图标值：`success`、`error`、`fail`、`exception`、`loading` 或 `none`。
+
+当函数返回 `undefined`（包括未写 `return`）时，不改变图标，最终使用 `defaultIcon`：
+
+```js
+toast.error('33', {
+	icon() {
+		return
+	}
+})
+// 最终使用 error 图标
+```
+
+### 小程序标题超过 7 个字符时隐藏图标
+
+可将函数配置在顶层公共配置中，统一保留原图标或在标题超过 7 个字符时改为 `none`：
+
+```js
+const appToast = toast.create({
+	icon(title, { defaultIcon }) {
+		return title.length > 7 ? 'none' : defaultIcon
+	}
+})
+
+await appToast.error('提交失败') // 使用 error 图标
+await appToast.error('提交失败，请稍后重试') // 使用 none 图标
+```
+
+函数配置也遵循原有优先级：单次 `icon` 函数优先于快捷方法 `icon` 函数，快捷方法 `icon` 函数优先于公共 `icon` 函数。同一次调用只执行优先级最高的一个函数。
+
 也可以直接传入配置：
 
 ```js

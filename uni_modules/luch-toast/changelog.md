@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1（2026-08-12）
+- `icon` 支持函数配置，可根据当前 `title` 和调用上下文动态返回图标。
+- `icon` 函数支持通过 `defaultIcon` 保留当前调用原本应使用的图标，返回 `undefined` 时自动回退。
+- `icon` 函数支持获取当前快捷方法名 `methodName`。
+
 ## 1.0.0（2026-08-12）
 - 提供默认调用实例和 `create()` 多实例能力。
 - 提供 `success`、`error`、`fail`、`exception`、`loading` 和 `warning` 方法。
