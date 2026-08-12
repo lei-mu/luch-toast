@@ -1,7 +1,6 @@
 # Changelog
 
-## 1.0.0
-
+## 1.0.0（2026-08-12）
 - 提供默认调用实例和 `create()` 多实例能力。
 - 提供 `success`、`error`、`fail`、`exception`、`loading` 和 `warning` 方法。
 - 支持标准 Promise、实例级与调用级生命周期回调。

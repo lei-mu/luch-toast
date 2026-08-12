@@ -12,15 +12,15 @@
     "Promise",
     "多实例",
     "项目配置"
-  ],
+],
   "repository": "https://github.com/lei-mu/luch-toast",
   "author": "luch",
   "license": "MIT",
   "type": "module",
   "engines": {
     "HBuilderX": "^3.1.0",
-    "uni-app": "^3.1.0",
-    "uni-app-x": "^3.1.0"
+    "uni-app": "^3.8.1",
+    "uni-app-x": "^3.8.1"
   },
   "dcloudext": {
     "type": "sdk-js",
@@ -80,7 +80,8 @@
             "jd": "√",
             "harmony": "√",
             "qq": "√",
-            "lark": "√"
+            "lark": "√",
+            "xhs": "-"
           },
           "quickapp": {
             "huawei": "-",
