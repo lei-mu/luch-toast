@@ -113,14 +113,38 @@ toast.error('33', {
 可将函数配置在顶层公共配置中，统一保留原图标或在标题超过 7 个字符时改为 `none`：
 
 ```js
-const appToast = toast.create({
-	icon(title, { defaultIcon }) {
-		return title.length > 7 ? 'none' : defaultIcon
+import toastLib from '@/uni_modules/luch-toast/index.js'
+
+const toast = toastLib.create({
+	// #ifdef MP && !MP-ALIPAY
+	success: {
+		icon: (title, {
+			defaultIcon
+		}) => {
+			return title.length > 7 ? 'none' : defaultIcon
+		}
+	},
+	// #endif
+	// #ifdef MP
+	error: {
+		icon: (title, {
+			defaultIcon
+		}) => {
+			return title.length > 7 ? 'none' : defaultIcon
+		}
+	},
+	loading: {
+		icon: (title, {
+			defaultIcon
+		}) => {
+			return title.length > 7 ? 'none' : defaultIcon
+		}
 	}
+	// #endif
 })
 
-await appToast.error('提交失败') // 使用 error 图标
-await appToast.error('提交失败，请稍后重试') // 使用 none 图标
+await toast.error('提交失败') // 使用 error 图标
+await toast.error('提交失败，请稍后重试') // 使用 none 图标
 ```
 
 函数配置也遵循原有优先级：单次 `icon` 函数优先于快捷方法 `icon` 函数，快捷方法 `icon` 函数优先于公共 `icon` 函数。同一次调用只执行优先级最高的一个函数。
